@@ -1,21 +1,21 @@
 module.exports = function(router, passport){
     console.log('route_member 호출!');
 
-    router.route('/').get((req, res) =>{ // localhost:3000번으로 들어갈 경우 
-        res.render('index.ejs'); // 화면에 출력
+    router.route('/').get((req, res) => {
+        res.render('index.ejs');
     });
 
- router.route('/signup').get((req, res) =>{//signup페이지로 이동
+    router.route('/signup').get((req, res) => {
         res.render('signup.ejs');
     });
-    //회원가입에서 누를시 
-    router.route('/signup').post(passport.authenticate('local-signup', { // signup버튼 클릭시 post방식으로 넘어갈경우 
-        successRedirect: '/profile', // 인증을 성공한 경우
-        failureRedirect: '/signup', // 실패할 경우
+
+    router.route('/signup').post(passport.authenticate('local-signup', {
+        successRedirect: '/profile',
+        failureRedirect: '/signup',
         failureFlash: true
     }));
-
-    router.route('/profile').get((req, res) => {
+  
+      router.route('/profile').get((req, res) => {
         if(!req.user){
             console.log('사용자 인증이 안된 상태!');
             res.redirect('/');
@@ -28,5 +28,20 @@ module.exports = function(router, passport){
             res.render('profile.ejs', {user: req.user});
         }
     });
+
+    router.route('/logout').get((req, res) => {
+        req.logout();
+        res.redirect('/');
+    });
+
+    router.route('/login').get((req, res) => {
+        res.render('login.ejs');
+    });
+
+    router.route('/login').post(passport.authenticate('local-login', {
+        successRedirect: '/profile',
+        failureRedirect: '/login',
+        failureFlash: true
+    }));
 
 }
