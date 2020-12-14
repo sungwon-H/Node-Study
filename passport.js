@@ -15,7 +15,7 @@ const { stat } = require('fs');
 
 const app = express(); // express 함수 사용
 const router = express.Router(); //라우터 사용
-const port = 3000;
+
 app.use(cookieParser()); // cookieParser 미들웨어 등록
 app.use(expressSession({
     secret: '!@#$%^&*()',
@@ -50,11 +50,21 @@ app.use(errorHandler); // 위에 에러 핸들러로 보냄
 app.set('views', __dirname + '/views'); //현재 디렉토리에서 뷰스폴더로 이어줌
 app.set('views engine', 'ejs');
 
+
+const config = require('./config/config');// 컨피그 파일을 읽는다
+const database = require('./database/database'); // 데이터베이스 파일을 읽어온다
+
+//패스포트 설정
+const configPassport = require('./config/passport');
+configPassport(app, passport);
+
+
 //라우터 설정
 const userPassport = require('./routes/route_member');
 userPassport(router, passport);
 
 
-app.listen(port, () => {
-    console.log(`${port}번 포트로 서버 실행중 ...`)
-})
+app.listen(config.server_port, () => { // config.js 문서의 port 가져옴 
+     console.log(`${config.server_port}번 포트로 서버 실행중 ...`);
+     database.init(app, config); // init호출
+});                                 
